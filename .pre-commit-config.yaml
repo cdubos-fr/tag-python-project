@@ -1,0 +1,58 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-toml
+  - id: debug-statements
+  - id: check-merge-conflict
+  - id: mixed-line-ending
+  - id: requirements-txt-fixer
+
+- repo: https://github.com/asottile/reorder_python_imports
+  rev: v3.9.0
+  hooks:
+  - id: reorder-python-imports
+    args: [--py39-plus]
+
+- repo: https://github.com/asottile/add-trailing-comma
+  rev: v2.4.0
+  hooks:
+  - id: add-trailing-comma
+    args: [--py36-plus]
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.3.1
+  hooks:
+  - id: pyupgrade
+    args: [--py39-plus]
+
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: v2.0.1
+  hooks:
+  - id: autopep8
+    args: ["-a", "-a", "--in-place", "--max-line-length=100"]
+
+- repo: https://github.com/PyCQA/flake8
+  rev: 6.0.0
+  hooks:
+  - id: flake8
+
+- repo: https://github.com/yunojuno/pre-commit-xenon
+  rev: v0.1
+  hooks:
+  - id: xenon
+    args: ["--max-average=A", "--max-modules=C", "--max-absolute=C", "."]
+
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.7.4
+  hooks:
+  - id: bandit
+    exclude: ^tests
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 'v1.0.0'
+  hooks:
+  - id: mypy

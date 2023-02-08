@@ -1,0 +1,10 @@
+add-trailing-comma
+autopep8
+bandit
+flake8
+ipython
+mypy
+pre-commit
+pyupgrade
+reorder-python-imports
+xenon

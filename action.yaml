@@ -1,0 +1,23 @@
+name: tag_and_release
+description: 'Tag and Release from python version'
+inputs:
+  python-module:
+    description: 'module name to build'
+    required: true
+  python-version:
+    description: 'python version used'
+    required: true
+    default: 3.9
+runs:
+  using: "composite"
+  steps:
+    - name: Configure python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      run: pip install ${{ github.action_path }}
+
+    - name: Create Tag and release
+      run: tag-python-project ${{ inputs.python-module }}
