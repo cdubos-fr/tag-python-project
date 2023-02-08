@@ -40,7 +40,7 @@ def is_breaking_change(match: dict[str, Any]) -> bool:
 @click.option('-r', '--repo', 'repo_name', default='')
 @click.option('-d', '--draft', default=False, is_flag=True)
 @click.option('-p', '--pre-release', default=False, is_flag=True)
-def cli(module_name: str, folder: str, repo_name: str, draft: bool, prerelease: bool):
+def cli(module_name: str, folder: str, repo_name: str, draft: bool, pre_release: bool):
     if os.path.realpath(folder) not in sys.path:
         sys.path.append(folder)
     module = importlib.import_module(module_name)
@@ -116,5 +116,5 @@ def cli(module_name: str, folder: str, repo_name: str, draft: bool, prerelease: 
         "commit",
         tagger=github.GithubObject.NotSet,
         draft=draft,
-        prerelease=prerelease,
+        prerelease=pre_release,
     )
