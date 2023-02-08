@@ -112,7 +112,7 @@ def cli(module_name: str, folder: str, repo_name: str, draft: bool, pre_release:
         f"Tag for version {version}",
         version,
         changelog,
-        target_rev,
+        str(target_rev),
         "commit",
         tagger=github.GithubObject.NotSet,
         draft=draft,
