@@ -11,11 +11,13 @@ import importlib
 import sys
 import os
 import github
-import os
 import re
 
 
-RE_CONVENTIONAL_COMMIT = re.compile('(?:(?P<type>\\w*)\\((?P<scope>\\w*)\\)?(?P<br>!)?: (?P<description>.*)(?:\n\n)?(?P<body>.*)?(?:\n\n)?(?P<foot>.*))')
+RE_CONVENTIONAL_COMMIT = re.compile(
+    '(?:(?P<type>\\w*)\\((?P<scope>\\w*)\\)?(?P<br>!)?:'
+    ' (?P<description>.*)(?:\n\n)?(?P<body>.*)?(?:\n\n)?(?P<foot>.*))',
+)
 
 
 def format_commits(commits: Iterable[str]) -> str:
@@ -58,10 +60,11 @@ def cli(module_name: str, folder: str, repo_name: str):
     else:
         rev, *_ = map(lambda x: x.commit, tags)
 
-
-    changelog_dict = {}
+    changelog_dict: dict[str, list[str]] = {}
     global_breaking_change = False
-    for commit in repo.iter_commits(f'{rev}...{repo.active_branch.commit}', no_merges=True):
+    for commit in repo.iter_commits(
+        f'{rev}...{repo.active_branch.commit}', no_merges=True,
+    ):
         msg = commit.message.strip()
         match = RE_CONVENTIONAL_COMMIT.match(msg)
 
@@ -72,8 +75,8 @@ def cli(module_name: str, folder: str, repo_name: str):
 
         parsed_commit = match.groupdict()
         breaking_change = is_breaking_change(parsed_commit)
-        breaking = "Breaking "*breaking_change
-        over = f' over {parsed_commit["scope"]}'*bool(parsed_commit['scope'])
+        breaking = "Breaking " * breaking_change
+        over = f' over {parsed_commit["scope"]}' * bool(parsed_commit['scope'])
         changelog_dict.setdefault(
             parsed_commit['type'], [],
         ).append(
@@ -81,7 +84,7 @@ def cli(module_name: str, folder: str, repo_name: str):
         )
         global_breaking_change |= breaking_change
 
-    br_changes_info = '\n\n> WARNING: BREAKING CHANGES !'*global_breaking_change
+    br_changes_info = '\n\n> WARNING: BREAKING CHANGES !' * global_breaking_change
     changelog = "\n".join([
         (
             f"Version {version.removeprefix('v')}"
@@ -95,7 +98,7 @@ def cli(module_name: str, folder: str, repo_name: str):
                 f"{format_commits(msgs)}"
             )
             for type_, msgs in changelog_dict.items()
-        ]
+        ],
     ])
     gh = github.Github(os.environ['GITHUB_TOKEN'])
     gh_repo = os.environ.get('GITHUB_REPOSITORY', repo_name)
