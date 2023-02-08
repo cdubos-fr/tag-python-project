@@ -38,7 +38,9 @@ def is_breaking_change(match: dict[str, Any]) -> bool:
 @click.argument('module-name')
 @click.option('-f', '--folder', default='.')
 @click.option('-r', '--repo', 'repo_name', default='')
-def cli(module_name: str, folder: str, repo_name: str):
+@click.option('-d', '--draft', default=False, is_flag=True)
+@click.option('-p', '--pre-release', default=False, is_flag=True)
+def cli(module_name: str, folder: str, repo_name: str, draft: bool, prerelease: bool):
     if os.path.realpath(folder) not in sys.path:
         sys.path.append(folder)
     module = importlib.import_module(module_name)
@@ -54,16 +56,17 @@ def cli(module_name: str, folder: str, repo_name: str):
     repo.git.fetch(all=True)
     tags = sorted(repo.tags, key=lambda x: x.name, reverse=True)
     if not tags:
-        rev, *_ = map(lambda x: x.hexsha, repo.iter_commits(None, max_parents=0))
+        origin_rev, *_ = map(lambda x: x.hexsha, repo.iter_commits(None, max_parents=0))
     elif version in map(lambda tag: tag.name, tags):
         raise click.exceptions.ClickException(f"Tag for version {version} already exist")
     else:
-        rev, *_ = map(lambda x: x.commit, tags)
+        origin_rev, *_ = map(lambda x: x.commit, tags)
 
     changelog_dict: dict[str, list[str]] = {}
     global_breaking_change = False
+    target_rev = repo.active_branch.commit
     for commit in repo.iter_commits(
-        f'{rev}...{repo.active_branch.commit}', no_merges=True,
+        f'{origin_rev}...{target_rev}', no_merges=True,
     ):
         msg = commit.message.strip()
         match = RE_CONVENTIONAL_COMMIT.match(msg)
@@ -109,9 +112,9 @@ def cli(module_name: str, folder: str, repo_name: str):
         f"Tag for version {version}",
         version,
         changelog,
-        object,
-        type,
+        target_rev,
+        "commit",
         tagger=github.GithubObject.NotSet,
-        draft=False,
-        prerelease=False,
+        draft=draft,
+        prerelease=prerelease,
     )
