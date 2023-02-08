@@ -17,7 +17,9 @@ runs:
         python-version: ${{ inputs.python-version }}
 
     - name: Install dependencies
+      shell: bash
       run: pip install ${{ github.action_path }}
 
     - name: Create Tag and release
+      shell: bash
       run: tag-python-project ${{ inputs.python-module }}
