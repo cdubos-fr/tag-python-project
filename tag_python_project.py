@@ -15,8 +15,8 @@ import re
 
 
 RE_CONVENTIONAL_COMMIT = re.compile(
-    '(?:(?P<type>\\w*)\\((?P<scope>\\w*)\\)?(?P<br>!)?:'
-    ' (?P<description>.*)(?:\n\n)?(?P<body>.*)?(?:\n\n)?(?P<foot>.*))',
+    r'(?:(?P<type>\w*)(?P<scope>\(\w*\))?(?P<br>!)?:'
+    r' (?P<description>.*)(?:\n\n)?(?P<body>.*)?(?:\n\n)?(?P<foot>.*))',
 )
 
 
@@ -70,7 +70,6 @@ def cli(module_name: str, folder: str, repo_name: str, draft: bool, pre_release:
     ):
         msg = commit.message.strip()
         match = RE_CONVENTIONAL_COMMIT.match(msg)
-
         if not match:
             message, *_ = msg.split('\n')
             changelog_dict.setdefault('others', []).append(message)
@@ -100,7 +99,7 @@ def cli(module_name: str, folder: str, repo_name: str, draft: bool, pre_release:
                 "\n"
                 f"{format_commits(msgs)}"
             )
-            for type_, msgs in changelog_dict.items()
+            for type_, msgs in sorted(changelog_dict.items(), key=lambda x: x[0])
         ],
     ])
     gh = github.Github(os.environ['GITHUB_TOKEN'])
