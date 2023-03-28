@@ -58,9 +58,9 @@ repos:
   hooks:
   - id: mypy
 
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v2.1.1
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v2.42.1
   hooks:
-    - id: conventional-pre-commit
-      stages: [commit-msg]
-      args: [feat, fix, hotfix, ci, doc, test, refacto]
+    - id: commitizen
+    - id: commitizen-branch
+      stages: [push]
